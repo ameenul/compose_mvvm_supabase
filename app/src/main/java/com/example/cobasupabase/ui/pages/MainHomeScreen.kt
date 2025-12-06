@@ -72,7 +72,7 @@ fun MainHomeScreen(navController: NavHostController) { // This is the root navCo
     ) { paddingValues ->
         NavHost(bottomNavController, startDestination = BottomNavItem.Beranda.route, Modifier.padding(paddingValues)) {
             composable(Routes.Beranda) { BerandaScreen(navController = navController) } // Pass the root navController
-            composable(Routes.Cari) { CariScreen() }
+            composable(Routes.Cari) { CariScreen(navController = navController) }
             composable(Routes.Berita) { BeritaScreen() }
             composable(Routes.Profil) { ProfilScreen() }
         }
