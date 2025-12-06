@@ -8,4 +8,10 @@ sealed class Screen(val route: String) {
         fun build(id: String) = "detail/$id"
     }
     object Add : Screen("addtodo")
+    object Beranda : Screen("beranda")
+    object Cari : Screen("cari")
+    object Jadwal : Screen("jadwal")
+    object Tempat : Screen("tempat")
+    object Berita : Screen("berita")
+    object Profil : Screen("profil")
 }

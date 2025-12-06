@@ -1,124 +1,98 @@
 package com.example.cobasupabase.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage // Pastikan library Coil sudah ada
+import coil.compose.AsyncImage
 import com.example.cobasupabase.domain.model.Teacher
 
 @Composable
-fun TeacherCard(teacher: Teacher) {
+fun TeacherCard(teacher: Teacher, modifier: Modifier = Modifier, onClick: (String) -> Unit) {
     Card(
-        modifier = Modifier
-            .width(220.dp) // Lebar fix supaya enak di scroll samping
-            .padding(end = 16.dp), // Jarak antar kartu
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEEEEEE)) // Border tipis
+        modifier = modifier
+            .width(200.dp)
+            .padding(8.dp)
+            .clickable { onClick(teacher.id) }, // Pass teacher ID on click
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // --- HEADER: FOTO & NAMA ---
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Foto Bulat
-                AsyncImage(
-                    model = teacher.imageUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                // Kolom Nama & Mapel
-                Column {
-                    Text(
-                        text = teacher.name,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        ),
-                        maxLines = 1
-                    )
-                    Text(
-                        text = teacher.subject,
-                        style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // --- RATING ---
+            AsyncImage(
+                model = teacher.imageUrl, // Assuming teacher object has an imageUrl
+                contentDescription = "Teacher Image",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = teacher.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = teacher.subject, // Assuming teacher object has a subject
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Star,
+                    imageVector = Icons.Filled.Star,
                     contentDescription = "Rating",
-                    tint = Color(0xFF3F51B5), // Warna Biru Tua/Ungu sesuai desain
-                    modifier = Modifier.size(20.dp)
+                    tint = Color(0xFFFFD700), // Gold color for star
+                    modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = teacher.rating.toString(),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF3F51B5)
-                    )
+                    text = "${teacher.rating}", // Assuming rating and reviewCount
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // --- TAGS (Tersedia Untuk) ---
-            Text(
-                text = "Tersedia untuk",
-                style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // List Tag (Chips)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                teacher.educationTags.take(2).forEach { tag -> // Ambil max 2 tag biar gak overflow
-                    Surface(
-                        color = Color(0xFFE3F2FD), // Biru Muda banget
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = tag,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                color = Color(0xFF1976D2), // Biru Text
-                                fontWeight = FontWeight.Medium
-                            )
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TeacherCardPreview() {
+    TeacherCard(
+        teacher = Teacher(
+            id = "T1",
+            name = "Budi Santoso",
+            subject = "Matematika",
+            imageUrl = "https://example.com/teacher1.jpg",
+            rating = 4.9,
+            price = "Rp. 100.000",
+            educationTags = listOf("SD", "SMP", "SMA"),
+        ),
+        onClick = {} // Provide an empty lambda for preview
+    )
 }

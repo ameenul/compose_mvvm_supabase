@@ -20,17 +20,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.cobasupabase.ui.nav.Routes // Import Routes from your new navigation file
-// Import existing screens
-import com.example.cobasupabase.ui.pages.BerandaScreen
-import com.example.cobasupabase.ui.pages.CariScreen
-import com.example.cobasupabase.ui.pages.BeritaScreen
-import com.example.cobasupabase.ui.pages.ProfilScreen
+import com.example.cobasupabase.ui.nav.Routes
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Beranda : BottomNavItem(Routes.Beranda, Icons.Default.Home, "Beranda")
     object Cari : BottomNavItem(Routes.Cari, Icons.Default.Search, "Cari")
-    object Berita : BottomNavItem(Routes.Berita, Icons.Default.Info, "Berita") // Note: Using Icons.Default.Home, consider changing if a more appropriate icon exists
+    object Berita : BottomNavItem(Routes.Berita, Icons.Default.Info, "Berita")
     object Profil : BottomNavItem(Routes.Profil, Icons.Default.Person, "Profil")
 }
 
@@ -42,7 +37,7 @@ val bottomNavItems = listOf(
 )
 
 @Composable
-fun MainHomeScreen(navController: NavHostController) { // This is the root navController
+fun MainHomeScreen(navController: NavHostController) {
     val bottomNavController = rememberNavController()
 
     Scaffold(
@@ -71,10 +66,29 @@ fun MainHomeScreen(navController: NavHostController) { // This is the root navCo
         }
     ) { paddingValues ->
         NavHost(bottomNavController, startDestination = BottomNavItem.Beranda.route, Modifier.padding(paddingValues)) {
-            composable(Routes.Beranda) { BerandaScreen(navController = navController) } // Pass the root navController
-            composable(Routes.Cari) { CariScreen(navController = navController) }
+            composable(Routes.Beranda) {
+                BerandaScreen(
+                    navController = navController, // Root controller for AddTodo, etc.
+                    onNavigateToCari = { bottomNavController.navigate(Routes.Cari) },
+                    onNavigateToJadwal = { bottomNavController.navigate(Routes.Jadwal) },
+                    onNavigateToTempat = { bottomNavController.navigate(Routes.Tempat) },
+                    onNavigateToBerita = { bottomNavController.navigate(Routes.Berita) },
+                    onNavigateToReview = { bottomNavController.navigate(Routes.Review) },
+                    onNavigateToTeacherDetail = { teacherId ->
+                        bottomNavController.navigate(Routes.buildTeacherDetailRoute(teacherId))
+                    }
+                )
+            }
+            composable(Routes.Cari) { CariScreen(navController = bottomNavController) } // CORRECTED: Pass bottomNavController
             composable(Routes.Berita) { BeritaScreen() }
             composable(Routes.Profil) { ProfilScreen() }
+            composable(Routes.TeacherDetail) { backStackEntry ->
+                val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
+                TeacherDetailScreen(teacherId = teacherId, navController = bottomNavController, onBack = { bottomNavController.popBackStack() })
+            }
+            composable(Routes.Jadwal) { JadwalScreen(navController = bottomNavController) }
+            composable(Routes.Tempat) { TempatScreen(navController = bottomNavController) }
+            composable(Routes.Review) { ReviewScreen(navController = bottomNavController) }
         }
     }
 }
@@ -82,6 +96,5 @@ fun MainHomeScreen(navController: NavHostController) { // This is the root navCo
 @Preview(showBackground = true)
 @Composable
 fun MainHomeScreenPreview() {
-    // Removed MentorifyTheme as it's not defined in context
     MainHomeScreen(navController = rememberNavController())
 }

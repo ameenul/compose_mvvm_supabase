@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.cobasupabase.ui.common.UiResult
 import com.example.cobasupabase.ui.components.TeacherCard
 import com.example.cobasupabase.ui.viewmodel.TeacherViewModel
+import com.example.cobasupabase.ui.nav.Routes // Import Routes for navigation
 
 @Composable
 fun CariScreen(
@@ -89,7 +90,9 @@ fun CariScreen(
                         modifier = Modifier.fillMaxSize() // Grid takes all available space and scrolls vertically
                     ) {
                         items(state.data) { teacher ->
-                            TeacherCard(teacher = teacher)
+                            TeacherCard(teacher = teacher, onClick = { teacherId ->
+                                navController.navigate(Routes.buildTeacherDetailRoute(teacherId))
+                            }) // Pass onClick lambda
                         }
                     }
                 }

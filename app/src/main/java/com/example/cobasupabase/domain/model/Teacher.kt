@@ -1,7 +1,7 @@
 package com.example.cobasupabase.domain.model
 
 data class Teacher(
-    val id: Int,
+    val id: String,
     val name: String,
     val subject: String,
     val rating: Double,

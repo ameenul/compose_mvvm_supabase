@@ -46,19 +46,25 @@ import com.example.cobasupabase.ui.common.UiResult
 import com.example.cobasupabase.ui.nav.Routes
 import com.example.cobasupabase.ui.viewmodel.AuthViewModel
 import com.example.cobasupabase.ui.viewmodel.TodoViewModel
-import com.example.cobasupabase.ui.components.TeacherCard // Import TeacherCard
-import com.example.cobasupabase.ui.viewmodel.TeacherViewModel // Import TeacherViewModel
+import com.example.cobasupabase.ui.components.TeacherCard
+import com.example.cobasupabase.ui.viewmodel.TeacherViewModel
 
 @Composable
 fun BerandaScreen(
     todoViewModel: TodoViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
-    teacherViewModel: TeacherViewModel = viewModel(), // Inject TeacherViewModel
-    navController: NavHostController
+    teacherViewModel: TeacherViewModel = viewModel(),
+    navController: NavHostController,
+    onNavigateToCari: () -> Unit,
+    onNavigateToJadwal: () -> Unit,
+    onNavigateToTempat: () -> Unit,
+    onNavigateToBerita: () -> Unit,
+    onNavigateToReview: () -> Unit,
+    onNavigateToTeacherDetail: (String) -> Unit // New lambda for teacher detail
 ) {
     val todosState by todoViewModel.todos.collectAsState()
     val currentUserEmail by authViewModel.currentUserEmail.collectAsState()
-    val teacherUiState by teacherViewModel.uiState.collectAsState() // Collect teacher UI state
+    val teacherUiState by teacherViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         todoViewModel.loadTodos()
@@ -74,88 +80,57 @@ fun BerandaScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Apply padding from Scaffold
+                .padding(paddingValues)
         ) {
-            // --- Header Section ---
-            item { // Wrap header in an item
+            // ... (Header and Todo List sections remain unchanged)
+            item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFF2B3D6A)) // Dark blue color from image
+                        .background(Color(0xFF2B3D6A))
                         .padding(horizontal = 24.dp, vertical = 50.dp)
                 ) {
                     Column {
-                        Text(
-                            "Selamat Datang,",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = Color.White
-                        )
-                        Text(
-                            currentUserEmail ?: "Pengguna!",
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = Color.White
-                        )
+                        Text("Selamat Datang,", style = MaterialTheme.typography.headlineSmall, color = Color.White)
+                        Text(currentUserEmail ?: "Pengguna!", style = MaterialTheme.typography.headlineLarge, color = Color.White)
                     }
                 }
             }
-            item { // Wrap overlapping card in an item
+            item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = (-40).dp) // Pull it up to overlap the dark blue box
+                        .offset(y = (-40).dp)
                         .padding(horizontal = 24.dp)
                 ) {
                     ElevatedCard(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = Color(0xFF58B2E0) // Light blue color from image
-                        )
+                        colors = CardDefaults.elevatedCardColors(containerColor = Color(0xFF58B2E0))
                     ) {
-                        Column(
-                            modifier = Modifier.padding(24.dp)
-                        ) {
-                            Text(
-                                "Cari guru terbaikmu.",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = Color.White
-                            )
-                            Text(
-                                "Cari atau pilih dari berbagai tingkat pendidikan.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White
-                            )
+                        Column(modifier = Modifier.padding(24.dp)) {
+                            Text("Cari guru terbaikmu.", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                            Text("Cari atau pilih dari berbagai tingkat pendidikan.", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                         }
                     }
                 }
             }
-            // --- End Header Section ---
-
-            // Remaining content (Todo List) takes the rest of the space
-            // This part is also an item or items within the LazyColumn
-            item { // Wrap the TodoList display logic in an item
+            item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .offset(y = (-40).dp) // Adjust for the negative offset of the card
-                        .padding(horizontal = 12.dp), // Add some horizontal padding for the list
+                        .offset(y = (-40).dp)
+                        .padding(horizontal = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     when (todosState) {
                         is UiResult.Idle -> {}
                         is UiResult.Loading -> CircularProgressIndicator()
-                        is UiResult.Error -> Text(
-                            (todosState as UiResult.Error).message,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        is UiResult.Error -> Text((todosState as UiResult.Error).message, modifier = Modifier.padding(16.dp))
                         is UiResult.Success -> {
-                            // Inlined TodoList logic here directly into the LazyColumn's item
-                            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) { // fillMaxWidth instead of fillMaxSize
+                            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 (todosState as UiResult.Success<List<Todo>>).data.forEach { todo ->
                                     ElevatedCard(onClick = { navController.navigate(Routes.Detail.replace("{id}", todo.id)) }) {
-                                        Row(
-                                            modifier = Modifier.padding(12.dp),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
+                                        Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                                             Column(Modifier.weight(1f)) {
                                                 Text(todo.title, style = MaterialTheme.typography.titleMedium)
                                                 todo.description?.let { Text(it, maxLines = 2) }
@@ -173,63 +148,90 @@ fun BerandaScreen(
             }
             
             // --- CariScreen UI Section ---
-            item { // Wrap CariScreen UI in an item
+            item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp) // Adjusted padding
+                        .padding(horizontal = 16.dp, vertical = 24.dp)
                 ) {
-                    // Header Section (from CariScreen)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Rekomendasi Guru",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                        )
-                        TextButton(onClick = { /* Navigate to List All */ }) {
-                            Text("Lainnya")
-                        }
+                        Text("Rekomendasi Guru", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                        TextButton(onClick = onNavigateToCari) { Text("Lainnya") }
                     }
-
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    // --- CONTENT BERDASARKAN STATE (from CariScreen) ---
                     when (val state = teacherUiState) {
                         is UiResult.Idle -> {}
-                        is UiResult.Loading -> {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                        }
-                        is UiResult.Error -> {
-                            Text(text = state.message, color = Color.Red)
-                        }
+                        is UiResult.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                        is UiResult.Error -> Text(text = state.message, color = Color.Red)
                         is UiResult.Success -> {
-                            // Tampilkan List Horizontal (LazyRow)
-                            LazyRow(
-                                contentPadding = PaddingValues(vertical = 8.dp) // Removed horizontal padding from here
-                            ) {
+                            LazyRow(contentPadding = PaddingValues(vertical = 8.dp)) {
                                 items(state.data) { teacher ->
-                                    TeacherCard(teacher = teacher)
+                                    TeacherCard(teacher = teacher, onClick = { teacherId ->
+                                        onNavigateToTeacherDetail(teacherId) // CORRECTED
+                                    })
                                 }
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
 
-                    // Spacer untuk konten di bawahnya (misal Tempat Les)
-                    Spacer(modifier = Modifier.height(24.dp))
+            // ... (Other sections with corrected onClicks remain unchanged)
+            item {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Jadwal Les", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                        TextButton(onClick = onNavigateToJadwal) { Text("Lainnya") }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+            item {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Rekomendasi Tempat Les", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                        TextButton(onClick = onNavigateToTempat) { Text("Lainnya") }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+            item {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Berita Populer", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                        TextButton(onClick = onNavigateToBerita) { Text("Lainnya") }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+            item {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Review Terbaru", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                        TextButton(onClick = onNavigateToReview) { Text("Lainnya") }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
     }
 }
 
-// Removed the private TodoList composable as its logic is now inlined or handled differently
-// The code from TodoList is now integrated into the LazyColumn's item block for todosState.Success
-
 @Preview(showBackground = true)
 @Composable
 fun BerandaScreenPreview() {
-    BerandaScreen(navController = rememberNavController())
+    BerandaScreen(
+        navController = rememberNavController(),
+        onNavigateToCari = {},
+        onNavigateToJadwal = {},
+        onNavigateToTempat = {},
+        onNavigateToBerita = {},
+        onNavigateToReview = {},
+        onNavigateToTeacherDetail = {} // Added for preview
+    )
 }

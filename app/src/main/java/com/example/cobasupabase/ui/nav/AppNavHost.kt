@@ -36,6 +36,12 @@ object Routes {
     const val Cari = "cari_route"
     const val Berita = "berita_route"
     const val Profil = "profil_route"
+    const val TeacherDetail = "teacher_detail_route/{teacherId}" // New route
+    const val Jadwal = "jadwal_route" // New route
+    const val Tempat = "tempat_route" // New route
+    const val Review = "review_route" // New route
+
+    fun buildTeacherDetailRoute(teacherId: String) = "teacher_detail_route/$teacherId" // Helper function
 }
 
 @Composable
@@ -101,12 +107,14 @@ fun AppNavigation(
             val id = backStackEntry.arguments?.getString("id") ?: ""
             DetailScreen(id = id, onBack = { navController.popBackStack() })
         }
+
+        // Removed TeacherDetail, Jadwal, Tempat, and Review composables from here.
+        // They are now managed by the NavHost inside MainHomeScreen.
     }
 }
 
 @Composable
 fun OnboardingScreenPlaceholder(navController: NavHostController, onOnboardingComplete: () -> Unit) {
-    // Minimal placeholder to allow AppNavigation to compile
     Text("Onboarding Screen Placeholder")
     LaunchedEffect(Unit) { onOnboardingComplete() }
 }
