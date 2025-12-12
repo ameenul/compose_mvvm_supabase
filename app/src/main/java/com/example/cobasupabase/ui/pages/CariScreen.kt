@@ -1,28 +1,13 @@
 package com.example.cobasupabase.ui.pages
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid // New Import
-import androidx.compose.foundation.lazy.grid.items // New Import
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,42 +19,45 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.cobasupabase.ui.common.UiResult
 import com.example.cobasupabase.ui.components.TeacherCard
+import com.example.cobasupabase.ui.nav.Routes
 import com.example.cobasupabase.ui.viewmodel.TeacherViewModel
-import com.example.cobasupabase.ui.nav.Routes // Import Routes for navigation
 
 @Composable
 fun CariScreen(
-    navController: NavHostController,
-    viewModel: TeacherViewModel = viewModel() // Inject ViewModel
+    onNavigateToTeacherDetail: (String) -> Unit,
+    onNavigateToCreateTeacher: () -> Unit,
+    viewModel: TeacherViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = onNavigateToCreateTeacher) { // CORRECTED
+                Icon(Icons.Default.Add, contentDescription = "Create Teacher")
+            }
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues) // Apply Scaffold padding
-                .fillMaxSize() // Column takes full size, but won't scroll itself
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
             // Header Section
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp), // Adjusted padding for header
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Rekomendasi Guru",
+                    text = "All Teachers",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
-                TextButton(onClick = { /* Navigate to List All */ }) {
-                    Text("Lainnya")
-                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // --- CONTENT BERDASARKAN STATE --- (now using LazyVerticalGrid)
             when (val state = uiState) {
                 is UiResult.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -83,20 +71,18 @@ fun CariScreen(
                 }
                 is UiResult.Success -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(2), // 2-column grid
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), // Padding for the grid content
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxSize() // Grid takes all available space and scrolls vertically
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         items(state.data) { teacher ->
-                            TeacherCard(teacher = teacher, onClick = { teacherId ->
-                                navController.navigate(Routes.buildTeacherDetailRoute(teacherId))
-                            }) // Pass onClick lambda
+                            TeacherCard(teacher = teacher, onClick = onNavigateToTeacherDetail) // CORRECTED
                         }
                     }
                 }
-                is UiResult.Idle -> {} // Handle Idle state as well
+                is UiResult.Idle -> {}
             }
         }
     }
@@ -105,5 +91,8 @@ fun CariScreen(
 @Preview(showBackground = true)
 @Composable
 fun CariScreenPreview() {
-        CariScreen(navController = rememberNavController())
+    CariScreen(
+        onNavigateToTeacherDetail = {},
+        onNavigateToCreateTeacher = {}
+    )
 }

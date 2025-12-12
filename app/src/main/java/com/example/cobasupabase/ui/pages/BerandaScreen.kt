@@ -1,38 +1,15 @@
 package com.example.cobasupabase.ui.pages
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,35 +26,33 @@ import com.example.cobasupabase.ui.viewmodel.AuthViewModel
 import com.example.cobasupabase.ui.viewmodel.TodoViewModel
 import com.example.cobasupabase.ui.components.TeacherCard
 import com.example.cobasupabase.ui.viewmodel.TeacherViewModel
-import com.example.cobasupabase.ui.viewmodel.NewsViewModel
-import com.example.cobasupabase.ui.components.HomeNewsItem
+
 @Composable
 fun BerandaScreen(
     todoViewModel: TodoViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
     teacherViewModel: TeacherViewModel = viewModel(),
-    newsViewModel: NewsViewModel = viewModel(),
-    navController: NavHostController,
+    // REMOVED NavController from here
+    onNavigateToAddTodo: () -> Unit, // ADDED lambda for Add Todo
+    onNavigateToDetail: (String) -> Unit, // ADDED lambda for Detail
     onNavigateToCari: () -> Unit,
     onNavigateToJadwal: () -> Unit,
     onNavigateToTempat: () -> Unit,
     onNavigateToBerita: () -> Unit,
     onNavigateToReview: () -> Unit,
-    onNavigateToTeacherDetail: (String) -> Unit // New lambda for teacher detail
+    onNavigateToTeacherDetail: (String) -> Unit
 ) {
     val todosState by todoViewModel.todos.collectAsState()
     val currentUserEmail by authViewModel.currentUserEmail.collectAsState()
     val teacherUiState by teacherViewModel.uiState.collectAsState()
-    val newsState by newsViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         todoViewModel.loadTodos()
-        newsViewModel.fetchNews()
     }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Routes.AddTodo) }) {
+            FloatingActionButton(onClick = onNavigateToAddTodo) { // CORRECTED
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
@@ -87,7 +62,7 @@ fun BerandaScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // ... (Header and Todo List sections remain unchanged)
+            // ... (Header section is unchanged)
             item {
                 Box(
                     modifier = Modifier
@@ -119,6 +94,8 @@ fun BerandaScreen(
                     }
                 }
             }
+
+            // --- Todo List Section ---
             item {
                 Column(
                     modifier = Modifier
@@ -134,7 +111,7 @@ fun BerandaScreen(
                         is UiResult.Success -> {
                             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 (todosState as UiResult.Success<List<Todo>>).data.forEach { todo ->
-                                    ElevatedCard(onClick = { navController.navigate(Routes.Detail.replace("{id}", todo.id)) }) {
+                                    ElevatedCard(onClick = { onNavigateToDetail(todo.id) }) { // CORRECTED
                                         Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                                             Column(Modifier.weight(1f)) {
                                                 Text(todo.title, style = MaterialTheme.typography.titleMedium)
@@ -152,7 +129,7 @@ fun BerandaScreen(
                 }
             }
             
-            // --- CariScreen UI Section ---
+            // ... (Other sections are unchanged)
             item {
                 Column(
                     modifier = Modifier
@@ -165,7 +142,7 @@ fun BerandaScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("Rekomendasi Guru", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                        TextButton(onClick = onNavigateToCari) { Text("Lainnya") }
+                        // TextButton(onClick = onNavigateToCari) { Text("Lainnya") }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     when (val state = teacherUiState) {
@@ -175,9 +152,7 @@ fun BerandaScreen(
                         is UiResult.Success -> {
                             LazyRow(contentPadding = PaddingValues(vertical = 8.dp)) {
                                 items(state.data) { teacher ->
-                                    TeacherCard(teacher = teacher, onClick = { teacherId ->
-                                        onNavigateToTeacherDetail(teacherId) // CORRECTED
-                                    })
+                                    TeacherCard(teacher = teacher, onClick = onNavigateToTeacherDetail)
                                 }
                             }
                         }
@@ -185,8 +160,6 @@ fun BerandaScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
-
-            // ... (Other sections with corrected onClicks remain unchanged)
             item {
                 Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -209,41 +182,8 @@ fun BerandaScreen(
                 Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("Berita Populer", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                        TextButton(onClick = onNavigateToBerita) { Text("Lainnya") }
+//                        TextButton(onClick = onNavigateToBerita) { Text("Lainnya") }
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    when (val state = newsState) {
-                        is UiResult.Loading -> {
-                            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                            }
-                        }
-                        is UiResult.Error -> {
-                            Text("Gagal memuat berita", color = Color.Red, style = MaterialTheme.typography.labelSmall)
-                        }
-                        is UiResult.Success -> {
-                            val topNews = state.data.take(2)
-
-                            if (topNews.isEmpty()) {
-                                Text("Belum ada berita.", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-                            } else {
-                                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                    topNews.forEach { news ->
-                                        HomeNewsItem(
-                                            news = news,
-                                            onClick = { newsId ->
-                                                navController.navigate(Routes.buildBeritaDetailRoute(newsId))
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        else -> {}
-                    }
-
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
@@ -264,12 +204,13 @@ fun BerandaScreen(
 @Composable
 fun BerandaScreenPreview() {
     BerandaScreen(
-        navController = rememberNavController(),
+        onNavigateToAddTodo = {},
+        onNavigateToDetail = {},
         onNavigateToCari = {},
         onNavigateToJadwal = {},
         onNavigateToTempat = {},
         onNavigateToBerita = {},
         onNavigateToReview = {},
-        onNavigateToTeacherDetail = {} // Added for preview
+        onNavigateToTeacherDetail = {}
     )
 }

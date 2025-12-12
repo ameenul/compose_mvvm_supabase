@@ -21,7 +21,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.cobasupabase.ui.nav.Routes
-import com.example.cobasupabase.ui.pages.AddNewsScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Beranda : BottomNavItem(Routes.Beranda, Icons.Default.Home, "Beranda")
@@ -69,7 +70,8 @@ fun MainHomeScreen(navController: NavHostController) {
         NavHost(bottomNavController, startDestination = BottomNavItem.Beranda.route, Modifier.padding(paddingValues)) {
             composable(Routes.Beranda) {
                 BerandaScreen(
-                    navController = bottomNavController, // Root controller for AddTodo, etc.
+                    onNavigateToAddTodo = { navController.navigate(Routes.AddTodo) },
+                    onNavigateToDetail = { id -> navController.navigate(Routes.Detail.replace("{id}", id)) },
                     onNavigateToCari = { bottomNavController.navigate(Routes.Cari) },
                     onNavigateToJadwal = { bottomNavController.navigate(Routes.Jadwal) },
                     onNavigateToTempat = { bottomNavController.navigate(Routes.Tempat) },
@@ -80,7 +82,14 @@ fun MainHomeScreen(navController: NavHostController) {
                     }
                 )
             }
-            composable(Routes.Cari) { CariScreen(navController = bottomNavController) } // CORRECTED: Pass bottomNavController
+            composable(Routes.Cari) {
+                CariScreen(
+                    onNavigateToCreateTeacher = { navController.navigate(Routes.CreateTeacher) }, // CORRECTED
+                    onNavigateToTeacherDetail = { teacherId ->
+                        bottomNavController.navigate(Routes.buildTeacherDetailRoute(teacherId))
+                    }
+                )
+            }
             composable(Routes.Berita) {  BeritaScreen( navController = bottomNavController) }
             composable(Routes.BeritaDetail) { backStackEntry ->
                 DetailBeritaScreen(
@@ -106,6 +115,13 @@ fun MainHomeScreen(navController: NavHostController) {
             composable(Routes.Jadwal) { JadwalScreen(navController = bottomNavController) }
             composable(Routes.Tempat) { TempatScreen(navController = bottomNavController) }
             composable(Routes.Review) { ReviewScreen(navController = bottomNavController) }
+            composable(
+                route = Routes.EditTeacher,
+                arguments = listOf(navArgument("teacherId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
+                EditTeacherScreen(teacherId = teacherId, navController = bottomNavController)
+            }
         }
     }
 }

@@ -25,4 +25,9 @@ sealed class Screen(val route: String) {
     object AddNews : Screen("add_news_route") {
         fun build() = "add_news_route"
     }
+
+    //Teacher
+    object EditTeacher : Screen("edit_teacher_route/{teacherId}") {
+        fun build(teacherId: String) = "edit_teacher_route/$teacherId"
+    }
 }

@@ -6,18 +6,20 @@ import com.example.cobasupabase.domain.model.Teacher
 object TeacherMapper {
     fun map(dto: TeacherDto): Teacher {
         return Teacher(
-            id = dto.id.toString(), // Convert Int id to String
+            id = dto.id.toString(),
+            userId = dto.userId ?: "",
             name = dto.name,
             subject = dto.subject,
+            description = dto.description,
+            imageUrl = dto.imageUrl ?: "https://via.placeholder.com/150",
             rating = dto.rating ?: 0.0,
-            price = dto.price ?: "Gratis",
-
-            // Logic memecah string "SD, SMP" menjadi List ["SD", "SMP"]
-            educationTags = dto.educationLevel?.split(",")?.map { it.trim() } ?: emptyList(),
-
-            // Karena data dummy kita pakai URL Unsplash (https://...), langsung pakai saja.
-            // Jika nanti upload sendiri, logic resolveImageUrl bisa ditambahkan disini.
-            imageUrl = dto.imageUrl ?: "https://via.placeholder.com/150"
+            price = dto.price ?: "Free",
+            educationHistory = dto.educationHistory,
+            phoneNumber = dto.phoneNumber,
+            certifications = dto.certifications,
+            experience = dto.experience,
+            linkedinUrl = dto.linkedinUrl,
+            educationTags = dto.educationLevel?.split(",")?.map { it.trim() } ?: emptyList()
         )
     }
 }

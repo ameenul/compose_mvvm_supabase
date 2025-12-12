@@ -86,11 +86,18 @@ fun TeacherCardPreview() {
     TeacherCard(
         teacher = Teacher(
             id = "T1",
+            userId = "676767",
             name = "Budi Santoso",
             subject = "Matematika",
             imageUrl = "https://example.com/teacher1.jpg",
             rating = 4.9,
             price = "Rp. 100.000",
+            description = "halo testest",
+            educationHistory = "SD, SMP, SMA",
+            phoneNumber = "08123456789",
+            certifications = "Sertifikat 1, Sertifikat 2",
+            experience = "5 tahun mengajar",
+            linkedinUrl = "https://linkedin.com/in/budi",
             educationTags = listOf("SD", "SMP", "SMA"),
         ),
         onClick = {} // Provide an empty lambda for preview

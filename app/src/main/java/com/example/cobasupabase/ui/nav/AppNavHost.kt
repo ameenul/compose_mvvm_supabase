@@ -9,42 +9,39 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.cobasupabase.ui.pages.LoginScreen
-import com.example.cobasupabase.ui.pages.RegisterScreen
-import com.example.cobasupabase.ui.pages.MainHomeScreen
+import com.example.cobasupabase.ui.pages.*
 import com.example.cobasupabase.ui.viewmodel.AuthViewModel
 import androidx.compose.ui.Modifier
-import androidx.compose.material3.Text // For OnboardingScreenPlaceholder
-import com.example.cobasupabase.ui.pages.AddTodoScreen // Import AddTodoScreen
-import com.example.cobasupabase.ui.pages.DetailScreen // Import DetailScreen
+import androidx.compose.material3.Text
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 object Graph {
     const val ROOT = "root_graph"
-    const val ONBOARDING = "onboarding_graph"
-    const val AUTH = "auth_graph"
     const val HOME = "home_graph"
 }
 
 object Routes {
-    const val Onboarding = "onboarding_route"
     const val Login = "login_route"
     const val Register = "register_route"
     const val Home = "home_route"
-    const val AddTodo = "addtodo_route" // Changed route name to match navigation call
+    const val AddTodo = "addtodo_route"
     const val Detail = "detail_route/{id}"
     const val Beranda = "beranda_route"
     const val Cari = "cari_route"
     const val Berita = "berita_route"
-    const val Profil = "profil_route"
-    const val TeacherDetail = "teacher_detail_route/{teacherId}" // New route
-    const val Jadwal = "jadwal_route" // New route
-    const val Tempat = "tempat_route" // New route
-    const val Review = "review_route" // New route
-
-    const val BeritaDetail = "news_detail/{newsId}"
     const val BeritaEdit = "news_edit_route/{newsId}"
+    const val BeritaDetail = "news_detail/{newsId}"
     const val AddNews = "add_news_route"
-    fun buildTeacherDetailRoute(teacherId: String) = "teacher_detail_route/$teacherId" // Helper function
+    const val Profil = "profil_route"
+    const val TeacherDetail = "teacher_detail_route/{teacherId}"
+    const val Jadwal = "jadwal_route"
+    const val Tempat = "tempat_route"
+    const val Review = "review_route"
+    const val CreateTeacher = "create_teacher_route"
+    const val EditTeacher = "edit_teacher_route/{teacherId}"
+
+    fun buildTeacherDetailRoute(teacherId: String) = "teacher_detail_route/$teacherId"
     fun buildBeritaDetailRoute(newsId: Int) = "news_detail/$newsId"
     fun buildBeritaEditRoute(newsId: Int) = "news_edit_route/$newsId"
 }
@@ -55,20 +52,13 @@ fun AppNavigation(
     authViewModel: AuthViewModel = viewModel()
 ) {
     val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
-
     val startDestination = if (isAuthenticated) Routes.Home else Routes.Login
 
     LaunchedEffect(isAuthenticated) {
         if (!isAuthenticated) {
-            navController.navigate(Routes.Login) {
-                popUpTo(navController.graph.id) {
-                    inclusive = true
-                }
-            }
+            navController.navigate(Routes.Login) { popUpTo(navController.graph.id) { inclusive = true } }
         } else {
-            navController.navigate(Routes.Home) {
-                popUpTo(Graph.ROOT) { inclusive = true }
-            }
+            navController.navigate(Routes.Home) { popUpTo(Graph.ROOT) { inclusive = true } }
         }
     }
 
@@ -77,21 +67,12 @@ fun AppNavigation(
         startDestination = startDestination,
         route = Graph.ROOT
     ) {
-        composable(Routes.Onboarding) {
-            OnboardingScreenPlaceholder(navController = navController) {
-                navController.popBackStack()
-                navController.navigate(Routes.Login)
-            }
-        }
-
         composable(Routes.Login) {
             LoginScreen(
                 viewModel = authViewModel,
-                onNavigateRegister = { navController.navigate(Routes.Register) },
-                onNavigateToForgotPassword = { /* TODO: Implement Forgot Password navigation */ }
+                onNavigateRegister = { navController.navigate(Routes.Register) }
             )
         }
-
         composable(Routes.Register) {
             RegisterScreen(
                 viewModel = authViewModel,
@@ -99,27 +80,25 @@ fun AppNavigation(
                 onBack = { navController.popBackStack() }
             )
         }
-
         composable(Routes.Home) {
-            MainHomeScreen(navController = navController) // Pass the root navController
+            MainHomeScreen(navController = navController)
         }
-
-        composable(Routes.AddTodo) { // Added AddTodoScreen composable
+        composable(Routes.AddTodo) {
             AddTodoScreen(onDone = { navController.popBackStack() })
         }
-
         composable(Routes.Detail) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
             DetailScreen(id = id, onBack = { navController.popBackStack() })
         }
-
-        // Removed TeacherDetail, Jadwal, Tempat, and Review composables from here.
-        // They are now managed by the NavHost inside MainHomeScreen.
+        composable(Routes.CreateTeacher) {
+            CreateTeacherScreen(navController = navController)
+        }
+        composable(
+            route = Routes.EditTeacher,
+            arguments = listOf(navArgument("teacherId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
+            EditTeacherScreen(teacherId = teacherId, navController = navController)
+        }
     }
-}
-
-@Composable
-fun OnboardingScreenPlaceholder(navController: NavHostController, onOnboardingComplete: () -> Unit) {
-    Text("Onboarding Screen Placeholder")
-    LaunchedEffect(Unit) { onOnboardingComplete() }
 }
