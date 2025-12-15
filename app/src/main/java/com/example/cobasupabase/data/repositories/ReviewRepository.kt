@@ -8,30 +8,37 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.storage
 import io.github.jan.supabase.gotrue.auth
 
-class ReviewRepository {
+class ReviewRepository(
+    private val teacherRepository: TeacherRepository = TeacherRepository()
+) {
     private val client = SupabaseHolder.client
 
-    suspend fun getReviews(teacherId: Int): List<ReviewDto> {
-        Log.d("ReviewRepository", "Fetching all reviews")
-        Log.d("ReviewRepository", "User ID: ${client.auth.currentUserOrNull()?.id}")
-        Log.d("ReviewRepository", "User Email: ${client.auth.currentUserOrNull()?.email}")
-        Log.d("ReviewRepository", "review data: ${client.postgrest["reviews"].select()}")
+    private suspend fun populateTeacherName(reviews: List<ReviewDto>): List<ReviewDto> {
+        return reviews.map { review ->
+            if (review.teacherId != null) {
+                val teacher = teacherRepository.getTeacherById(review.teacherId)
+                review.copy(teacherName = teacher?.name)
+            } else {
+                review
+            }
+        }
+    }
 
-        return client.postgrest["reviews"].select {
+    suspend fun getReviews(teacherId: Int): List<ReviewDto> {
+        Log.d("ReviewRepository", "Fetching reviews for teacherId: $teacherId")
+        val response = client.postgrest["reviews"].select {
             filter { eq("teacher_id", teacherId) }
             order("created_at", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
         }.decodeList<ReviewDto>()
+        return populateTeacherName(response)
     }
 
     suspend fun getAllReviews(): List<ReviewDto> {
         Log.d("ReviewRepository", "Fetching all reviews")
-        Log.d("ReviewRepository", "User ID: ${client.auth.currentUserOrNull()?.id}")
-        Log.d("ReviewRepository", "User Email: ${client.auth.currentUserOrNull()?.email}")
-        Log.d("ReviewRepository", "review data: ${client.postgrest["reviews"].select()}")
-
-        return client.postgrest["reviews"].select {
+        val response = client.postgrest["reviews"].select {
             order("created_at", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
         }.decodeList<ReviewDto>()
+        return populateTeacherName(response)
     }
 
     suspend fun createReview(teacherId: Int, name: String, rating: Int, comment: String, imageBytes: ByteArray?) {

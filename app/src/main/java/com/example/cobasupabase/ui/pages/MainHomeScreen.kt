@@ -72,7 +72,7 @@ fun MainHomeScreen(navController: NavHostController) {
                 BerandaScreen(
                     onNavigateToJadwal = { navController.navigate(Routes.Jadwal) },
                     onNavigateToTempat = { navController.navigate(Routes.Tempat) },
-                    onNavigateToReview = { navController.navigate(Routes.ReviewList) },
+                    onNavigateToReview = { navController.navigate(Routes.AllReviewsList) }, // Changed from ReviewList
                     onNavigateToTeacherDetail = { teacherId ->
                         navController.navigate(Routes.buildTeacherDetailRoute(teacherId.toInt()))
                     }

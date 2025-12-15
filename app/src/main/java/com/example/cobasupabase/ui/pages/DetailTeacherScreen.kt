@@ -43,7 +43,8 @@ import com.example.cobasupabase.ui.viewmodel.TeacherViewModel
 fun TeacherDetailScreen(
     teacherId: Int,
     navController: NavHostController,
-    buildTeacherEditRoute: Int,
+    onNavigateToReviewList: (Int) -> Unit, // New lambda for navigating to ReviewList
+    onNavigateToEditTeacher: (Int) -> Unit, // New lambda for navigating to EditTeacher
     viewModel: TeacherViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -98,7 +99,7 @@ fun TeacherDetailScreen(
                                 text = { Text("Edit") },
                                 onClick = {
                                     showMenu = false
-                                    navController.navigate(Routes.buildTeacherEditRoute(teacherId)) // Corrected navigation
+                                    onNavigateToEditTeacher(teacherId) // Use the new lambda for editing
                                 },
                                 enabled = isOwner
                             )
@@ -126,7 +127,7 @@ fun TeacherDetailScreen(
                 is UiResult.Loading -> CircularProgressIndicator()
                 is UiResult.Error -> Text(text = state.message, color = Color.Red, fontSize = 18.sp)
                 is UiResult.Success -> {
-                    TeacherDetailContent(teacher = state.data, navController = navController)
+                    TeacherDetailContent(teacher = state.data, navController = navController, onNavigateToReviewList = onNavigateToReviewList)
                 }
                 is UiResult.Idle -> {}
             }
@@ -164,7 +165,7 @@ fun TeacherDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TeacherDetailContent(teacher: Teacher, navController: NavHostController) {
+fun TeacherDetailContent(teacher: Teacher, navController: NavHostController, onNavigateToReviewList: (Int) -> Unit) {
     val context = LocalContext.current
 
     Column(
@@ -291,7 +292,7 @@ fun TeacherDetailContent(teacher: Teacher, navController: NavHostController) {
             Text("Lihat Jadwal")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { navController.navigate(Routes.ReviewList) }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { onNavigateToReviewList(teacher.id) }, modifier = Modifier.fillMaxWidth()) {
             Text("Lihat Review")
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -320,7 +321,7 @@ fun TeacherDetailScreenPreview() {
     )
     Scaffold { padding ->
         Box(modifier = Modifier.padding(padding)) {
-             TeacherDetailContent(teacher = fakeTeacher, navController = navController)
+             TeacherDetailContent(teacher = fakeTeacher, navController = navController, onNavigateToReviewList = { /* Do nothing for preview */ })
         }
     }
 }
