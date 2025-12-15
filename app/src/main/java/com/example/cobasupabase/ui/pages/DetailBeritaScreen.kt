@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.cobasupabase.ui.common.UiResult
@@ -33,28 +34,27 @@ fun DetailBeritaScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val deleteState by viewModel.deleteUiState.collectAsState()
+    val currentUserId by viewModel.currentUserId.collectAsState()
 
     val context = LocalContext.current
 
-    // State untuk Dialog Konfirmasi Hapus
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchNewsDetail()
     }
-    // Efek Samping: Memantau status penghapusan
+
     LaunchedEffect(deleteState) {
         if (deleteState is UiResult.Success) {
             Toast.makeText(context, "Berita berhasil dihapus", Toast.LENGTH_SHORT).show()
             viewModel.resetDeleteState()
-            onBack() // Kembali ke list setelah hapus
+            onBack()
         } else if (deleteState is UiResult.Error) {
             Toast.makeText(context, (deleteState as UiResult.Error).message, Toast.LENGTH_SHORT).show()
             viewModel.resetDeleteState()
         }
     }
 
-    // Modal Konfirmasi Hpaus
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -101,6 +101,7 @@ fun DetailBeritaScreen(
                 }
                 is UiResult.Success -> {
                     val news = state.data
+                    val isOwner = news.userId == currentUserId
 
                     Column(
                         modifier = Modifier
@@ -137,7 +138,6 @@ fun DetailBeritaScreen(
 
                             Spacer(modifier = Modifier.height(32.dp))
 
-                            // --- TOMBOL AKSI (EDIT & HAPUS) ---
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -147,8 +147,9 @@ fun DetailBeritaScreen(
                                     modifier = Modifier.weight(1f),
                                     shape = MaterialTheme.shapes.small,
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF2B3467) // Kode warna biru tua
-                                    )
+                                        containerColor = Color(0xFF2B3467)
+                                    ),
+                                    enabled = isOwner // Enabled only if user is owner
                                 ) {
                                     Text("Edit")
                                 }
@@ -159,7 +160,8 @@ fun DetailBeritaScreen(
                                     border = BorderStroke(1.dp, Color(0xFFB71C1C)),
                                     colors = ButtonDefaults.outlinedButtonColors(
                                         contentColor = Color(0xFFB71C1C)
-                                    )
+                                    ),
+                                    enabled = isOwner // Enabled only if user is owner
                                 ) {
                                     Text("Hapus")
                                 }
@@ -169,10 +171,10 @@ fun DetailBeritaScreen(
                         }
                     }
                 }
-                else -> {}
+                is UiResult.Idle -> {}
+                else -> { }
             }
 
-            // Loading Overlay saat menghapus
             if (deleteState is UiResult.Loading) {
                 Box(
                     modifier = Modifier

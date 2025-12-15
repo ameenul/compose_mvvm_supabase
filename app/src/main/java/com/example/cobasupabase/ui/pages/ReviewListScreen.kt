@@ -20,6 +20,9 @@ import androidx.navigation.NavController
 import com.example.cobasupabase.ui.common.UiResult
 import com.example.cobasupabase.ui.nav.Routes
 import com.example.cobasupabase.ui.viewmodel.ReviewViewModel
+import coil.compose.AsyncImage // Import AsyncImage
+import androidx.compose.foundation.shape.CircleShape // Import CircleShape
+import androidx.compose.ui.draw.clip // Import clip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +73,15 @@ fun ReviewListScreen(
                             items(res.data) { review ->
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
+                                        review.avatarUrl?.let { url ->
+                                            AsyncImage(
+                                                model = url,
+                                                contentDescription = "Image",
+                                                modifier = Modifier
+                                                    .size(100.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                        }
                                         Text(text = review.reviewerName ?: "Anonim", style = MaterialTheme.typography.titleMedium)
                                         Spacer(modifier = Modifier.width(8.dp))
                                         if (teacherId == null || teacherId == 0) {

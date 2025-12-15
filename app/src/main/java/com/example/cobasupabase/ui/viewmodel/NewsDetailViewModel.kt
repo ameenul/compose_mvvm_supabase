@@ -9,6 +9,9 @@ import com.example.cobasupabase.ui.common.UiResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.example.cobasupabase.data.remote.SupabaseHolder
+import io.github.jan.supabase.gotrue.auth
+import kotlinx.coroutines.flow.StateFlow
 
 class NewsDetailViewModel(
     savedStateHandle: SavedStateHandle
@@ -25,8 +28,17 @@ class NewsDetailViewModel(
     private val _deleteUiState = MutableStateFlow<UiResult<Boolean>>(UiResult.Idle)
     val deleteUiState = _deleteUiState.asStateFlow()
 
+    // For current authenticated user ID
+    private val _currentUserId = MutableStateFlow<String?>(null)
+    val currentUserId: StateFlow<String?> = _currentUserId
+
     init {
         fetchNewsDetail()
+        loadCurrentUserId()
+    }
+
+    private fun loadCurrentUserId() {
+        _currentUserId.value = SupabaseHolder.client.auth.currentUserOrNull()?.id
     }
 
     fun fetchNewsDetail() {

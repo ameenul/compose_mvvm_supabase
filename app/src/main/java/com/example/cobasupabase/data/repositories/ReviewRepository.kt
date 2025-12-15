@@ -46,7 +46,7 @@ class ReviewRepository(
 
         var publicUrl: String? = null
         if (imageBytes != null) {
-            val fileName = "${System.currentTimeMillis()}.jpg"
+            val fileName = "${user.id}/review_${System.currentTimeMillis()}.jpg"
             val bucket = client.storage["review-images"]
             bucket.upload(fileName, imageBytes)
             publicUrl = bucket.publicUrl(fileName)

@@ -103,32 +103,70 @@ fun BerandaScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
+            // Jadwal Les Card
             item {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text("Jadwal Les", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                        TextButton(onClick = onNavigateToJadwal) { Text("Lainnya") }
+                ElevatedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Jadwal Les", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                            TextButton(onClick = onNavigateToJadwal) { Text("Cek Jadwal") }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Lihat jadwal les yang akan datang.", style = MaterialTheme.typography.bodyMedium)
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
+            // Rekomendasi Tempat Les Card
             item {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text("Rekomendasi Tempat Les", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                        TextButton(onClick = onNavigateToTempat) { Text("Lainnya") }
+                ElevatedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Rekomendasi Tempat Les", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                            TextButton(onClick = onNavigateToTempat) { Text("Cek Tempat") }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Temukan tempat les terbaik di dekatmu.", style = MaterialTheme.typography.bodyMedium)
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
-            // hapus highlight berita di beranda
+            // Review Terbaru Card
             item {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text("Review Terbaru", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
-                        TextButton(onClick = onNavigateToReview) { Text("Lainnya") }
+                ElevatedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Review Terbaru", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+                            TextButton(onClick = onNavigateToReview) { Text("Cek Review") }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Lihat ulasan terbaru dari pengguna lain.", style = MaterialTheme.typography.bodyMedium)
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
