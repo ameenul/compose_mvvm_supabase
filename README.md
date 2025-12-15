@@ -1,4 +1,4 @@
-# 🎓 Mentorify - Cari Mentor & Tempat Les Terbaik
+# 🎓 Mentorify
 
 **Mentorify** adalah aplikasi mobile berbasis Android yang menghubungkan siswa dengan
 mentor (guru privat) dan tempat bimbingan belajar terbaik. Aplikasi ini dikembangkan sebagai
@@ -32,12 +32,12 @@ Ulasan**. Data bersumber dari tabel database: reviews.
 Aplikasi ini dibangun dengan arsitektur modern dan library standar industri:
 
 ```
-● Bahasa: Kotlin
-● UI Framework: Jetpack Compose (Material Design 3)
-● Backend as a Service: Supabase
+● Bahasa: **Kotlin**
+● UI Framework: **Jetpack Compose** (Material Design 3)
+● Backend as a Service: **Supabase**
 ● Authentication: Email & Password Login.
-● Database: PostgreSQL dengan Row Level Security (RLS).
-● Arsitektur: MVVM (Model - View - ViewModel) + Clean Architecture (Data/Domain/UI).
+● Database: **PostgreSQL** dengan Row Level Security (RLS).
+● Arsitektur: **MVVM** (Model - View - ViewModel) + Clean Architecture (Data/Domain/UI).
 ```
 ## 📱 Fitur Utama
 
@@ -68,32 +68,41 @@ Kami menerapkan pola **Separation of Concerns** agar kode mudah dibaca dan diuji
 
 com.example.mentorify
 ├── data # Layer Data (Akses ke Supabase)
+
 │ ├── dto # Data Transfer Object (Sesuai kolom DB)
+
 │ ├── remote # Konfigurasi Client Supabase
+
 │ └── repositories # Logika CRUD per fitur
+
 ├── domain # Layer Bisnis
+
 │ ├── mapper # Konversi DTO ke Model UI
+
 │ └── model # Data Class bersih untuk UI
+
 ├── ui # Layer Tampilan (Jetpack Compose)
+
 │ ├── common # Komponen ulang (Button, Input)
+
 │ ├── components # Card item list (GuruCard, NewsCard, dll)
+
 │ ├── nav # Konfigurasi Navigasi & Rute
+
 │ ├── pages # Halaman layar (Screen)
+
 │ └── theme # Styling warna & tipografi
+
 └── viewmodel # State Management (MVVM)
 
-## 🚀 Cara Menjalankan (Installation)
-
+## Cara Menjalankan (Installation)
 1. **Clone Repository**
-    git clone
-    [https://github.com/username-anda/mentorify-mobile.git](https://github.com/username-anda/
-    mentorify-mobile.git)
+    git clone   [https://github.com/afifalhauzan/mentorify-mobile.git]
 2. **Buka di Android Studio**
-    ○ Pastikan menggunakan versi terbaru (Koala / Ladybug recommended).
+    ○ Pastikan menggunakan versi terbaru.
     ○ Tunggu proses _Gradle Sync_ selesai.
 3. **Konfigurasi API Key**
-    ○ File Constants.kt atau local.properties tidak disertakan demi
-       keamanan.
+    ○ File Constants.kt atau local.properties tidak disertakan demi keamanan.
     ○ Hubungi Tech Lead untuk mendapatkan SUPABASE_URL dan SUPABASE_KEY.
 4. **Run App**
     ○ Jalankan pada Emulator atau Device Fisik.
