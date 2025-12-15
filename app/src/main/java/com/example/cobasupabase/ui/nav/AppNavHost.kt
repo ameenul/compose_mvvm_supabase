@@ -16,15 +16,12 @@ import androidx.navigation.navArgument
 
 object Graph {
     const val ROOT = "root_graph"
-    const val HOME = "home_graph"
 }
 
 object Routes {
     const val Login = "login_route"
     const val Register = "register_route"
-    const val Home = "home_route"
-    const val AddTodo = "addtodo_route"
-    const val Detail = "detail_route/{id}"
+    const val MainHomeRoute = "main_home_route"
     const val Beranda = "beranda_route"
     const val Cari = "cari_route"
     const val Berita = "berita_route"
@@ -51,13 +48,13 @@ fun AppNavigation(
     startDestination: String = Routes.Login
 ) {
     val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
-    val startDestination = if (isAuthenticated) Routes.Home else Routes.Login
+    val startDestination = if (isAuthenticated) Routes.MainHomeRoute else Routes.Login
 
     LaunchedEffect(isAuthenticated) {
         if (!isAuthenticated) {
             navController.navigate(Routes.Login) { popUpTo(navController.graph.id) { inclusive = true } }
         } else {
-            navController.navigate(Routes.Home) { popUpTo(Graph.ROOT) { inclusive = true } }
+            navController.navigate(Routes.MainHomeRoute) { popUpTo(Graph.ROOT) { inclusive = true } }
         }
     }
 
@@ -79,15 +76,8 @@ fun AppNavigation(
                 onBack = { navController.popBackStack() }
             )
         }
-        composable(Routes.Home) {
+        composable(Routes.MainHomeRoute) {
             MainHomeScreen(navController = navController)
-        }
-        composable(Routes.AddTodo) {
-            AddTodoScreen(onDone = { navController.popBackStack() })
-        }
-        composable(Routes.Detail) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id") ?: ""
-            DetailScreen(id = id, onBack = { navController.popBackStack() })
         }
         composable(Routes.CreateTeacher) {
             CreateTeacherScreen(navController = navController)

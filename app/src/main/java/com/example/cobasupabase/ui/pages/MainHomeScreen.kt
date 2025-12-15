@@ -70,8 +70,6 @@ fun MainHomeScreen(navController: NavHostController) {
         NavHost(bottomNavController, startDestination = BottomNavItem.Beranda.route, Modifier.padding(paddingValues)) {
             composable(Routes.Beranda) {
                 BerandaScreen(
-                    onNavigateToAddTodo = { navController.navigate(Routes.AddTodo) },
-                    onNavigateToDetail = { id -> navController.navigate(Routes.Detail.replace("{id}", id)) },
                     onNavigateToJadwal = { navController.navigate(Routes.Jadwal) },
                     onNavigateToTempat = { navController.navigate(Routes.Tempat) },
                     onNavigateToReview = { navController.navigate(Routes.Review) },
