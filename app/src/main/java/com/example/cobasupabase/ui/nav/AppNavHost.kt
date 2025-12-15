@@ -11,8 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cobasupabase.ui.pages.*
 import com.example.cobasupabase.ui.viewmodel.AuthViewModel
-import androidx.compose.ui.Modifier
-import androidx.compose.material3.Text
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -49,7 +47,8 @@ object Routes {
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    startDestination: String = Routes.Login
 ) {
     val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
     val startDestination = if (isAuthenticated) Routes.Home else Routes.Login
@@ -99,6 +98,17 @@ fun AppNavigation(
         ) { backStackEntry ->
             val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
             EditTeacherScreen(teacherId = teacherId, navController = navController)
+        }
+
+        composable(
+            route = Routes.TeacherDetail + "/{teacherId}",
+            arguments = listOf(navArgument("teacherId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("teacherId") ?: ""
+            TeacherDetailScreen(
+                teacherId = id,
+                navController = navController // Oper 'Bapak' supaya bisa back
+            )
         }
     }
 }

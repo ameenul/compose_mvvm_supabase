@@ -72,13 +72,11 @@ fun MainHomeScreen(navController: NavHostController) {
                 BerandaScreen(
                     onNavigateToAddTodo = { navController.navigate(Routes.AddTodo) },
                     onNavigateToDetail = { id -> navController.navigate(Routes.Detail.replace("{id}", id)) },
-                    onNavigateToCari = { bottomNavController.navigate(Routes.Cari) },
                     onNavigateToJadwal = { bottomNavController.navigate(Routes.Jadwal) },
                     onNavigateToTempat = { bottomNavController.navigate(Routes.Tempat) },
-                    onNavigateToBerita = { bottomNavController.navigate(Routes.Berita) },
                     onNavigateToReview = { bottomNavController.navigate(Routes.Review) },
                     onNavigateToTeacherDetail = { teacherId ->
-                        bottomNavController.navigate(Routes.buildTeacherDetailRoute(teacherId))
+                        navController.navigate(Routes.TeacherDetail + "/$teacherId")
                     }
                 )
             }
@@ -86,7 +84,7 @@ fun MainHomeScreen(navController: NavHostController) {
                 CariScreen(
                     onNavigateToCreateTeacher = { navController.navigate(Routes.CreateTeacher) }, // CORRECTED
                     onNavigateToTeacherDetail = { teacherId ->
-                        bottomNavController.navigate(Routes.buildTeacherDetailRoute(teacherId))
+                        navController.navigate(Routes.TeacherDetail + "/$teacherId")
                     }
                 )
             }
@@ -108,10 +106,6 @@ fun MainHomeScreen(navController: NavHostController) {
                 )
             }
             composable(Routes.Profil) { ProfilScreen() }
-            composable(Routes.TeacherDetail) { backStackEntry ->
-                val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
-                TeacherDetailScreen(teacherId = teacherId, navController = bottomNavController, onBack = { bottomNavController.popBackStack() })
-            }
             composable(Routes.Jadwal) { JadwalScreen(navController = bottomNavController) }
             composable(Routes.Tempat) { TempatScreen(navController = bottomNavController) }
             composable(Routes.Review) { ReviewScreen(navController = bottomNavController) }

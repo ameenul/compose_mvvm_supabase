@@ -43,7 +43,6 @@ import com.example.cobasupabase.ui.viewmodel.TeacherViewModel
 fun TeacherDetailScreen(
     teacherId: String,
     navController: NavHostController,
-    onBack: () -> Unit,
     viewModel: TeacherViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -66,7 +65,6 @@ fun TeacherDetailScreen(
         when (deleteState) {
             is UiResult.Success -> {
                 Toast.makeText(context, "Teacher deleted successfully!", Toast.LENGTH_SHORT).show()
-                onBack() // Navigate back after successful deletion
             }
             is UiResult.Error -> {
                 Toast.makeText(context, "Failed to delete teacher: ${(deleteState as UiResult.Error).message}", Toast.LENGTH_LONG).show()
@@ -80,8 +78,8 @@ fun TeacherDetailScreen(
             TopAppBar(
                 title = { Text("Detail Guru") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Kembali")
+                    IconButton(onClick = { navController.popBackStack() }) { // Fungsi Back
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {

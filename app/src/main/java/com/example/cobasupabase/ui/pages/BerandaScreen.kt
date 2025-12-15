@@ -32,13 +32,10 @@ fun BerandaScreen(
     todoViewModel: TodoViewModel = viewModel(),
     authViewModel: AuthViewModel = viewModel(),
     teacherViewModel: TeacherViewModel = viewModel(),
-    // REMOVED NavController from here
     onNavigateToAddTodo: () -> Unit, // ADDED lambda for Add Todo
     onNavigateToDetail: (String) -> Unit, // ADDED lambda for Detail
-    onNavigateToCari: () -> Unit,
     onNavigateToJadwal: () -> Unit,
     onNavigateToTempat: () -> Unit,
-    onNavigateToBerita: () -> Unit,
     onNavigateToReview: () -> Unit,
     onNavigateToTeacherDetail: (String) -> Unit
 ) {
@@ -206,10 +203,8 @@ fun BerandaScreenPreview() {
     BerandaScreen(
         onNavigateToAddTodo = {},
         onNavigateToDetail = {},
-        onNavigateToCari = {},
         onNavigateToJadwal = {},
         onNavigateToTempat = {},
-        onNavigateToBerita = {},
         onNavigateToReview = {},
         onNavigateToTeacherDetail = {}
     )
