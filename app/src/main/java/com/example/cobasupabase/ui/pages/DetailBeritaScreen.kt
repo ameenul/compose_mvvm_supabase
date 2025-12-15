@@ -26,6 +26,7 @@ import com.example.cobasupabase.ui.viewmodel.NewsDetailViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailBeritaScreen(
+    newsId: Int,
     onBack: () -> Unit,
     onNavigateToEdit: (Int) -> Unit,
     viewModel: NewsDetailViewModel = viewModel()

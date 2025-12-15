@@ -34,6 +34,7 @@ import java.io.InputStream
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditBeritaScreen(
+    newsId: Int,
     onBack: () -> Unit,
     viewModel: EditNewsViewModel = viewModel()
 ) {

@@ -101,14 +101,54 @@ fun AppNavigation(
         }
 
         composable(
-            route = Routes.TeacherDetail + "/{teacherId}",
+            route = Routes.TeacherDetail,
             arguments = listOf(navArgument("teacherId") { type = NavType.StringType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("teacherId") ?: ""
             TeacherDetailScreen(
                 teacherId = id,
-                navController = navController // Oper 'Bapak' supaya bisa back
+                navController = navController
             )
+        }
+
+        composable(
+            route = Routes.BeritaDetail,
+            arguments = listOf(navArgument("newsId") { type = NavType.IntType; defaultValue = -1 })
+        ) { backStackEntry ->
+            val newsId = backStackEntry.arguments?.getInt("newsId") ?: -1
+            DetailBeritaScreen(
+                newsId = newsId,
+                onBack = { navController.popBackStack() },
+                onNavigateToEdit = { id -> navController.navigate(Routes.buildBeritaEditRoute(id))}
+            )
+        }
+
+        composable(
+            route = Routes.BeritaEdit,
+            arguments = listOf(navArgument("newsId") { type = NavType.IntType; defaultValue = -1 })
+        ) { backStackEntry ->
+            val newsId = backStackEntry.arguments?.getInt("newsId") ?: -1
+            EditBeritaScreen(
+                newsId = newsId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.AddNews) {
+            AddNewsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.Jadwal) {
+            JadwalScreen(navController = navController)
+        }
+
+        composable(Routes.Tempat) {
+            TempatScreen(navController = navController)
+        }
+
+        composable(Routes.Review) {
+            ReviewScreen(navController = navController)
         }
     }
 }

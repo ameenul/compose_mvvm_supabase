@@ -41,6 +41,8 @@ import com.example.cobasupabase.ui.nav.Routes
 @Composable
 fun BeritaScreen(
     navController: NavHostController,
+    onNavigateToAddNews : (String) -> Unit,
+    onNavigateToBeritaDetail : (Int) -> Unit,
     viewModel: NewsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -51,7 +53,7 @@ fun BeritaScreen(
 
     Scaffold (
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Routes.AddNews) }) {
+            FloatingActionButton(onClick = { onNavigateToAddNews("") }) {
                 Icon(Icons.Default.Add, contentDescription = "AddNews")
             }
         }
@@ -102,9 +104,7 @@ fun BeritaScreen(
                         items(state.data, key = { news -> news.id }) { news: News ->
                             NewsList(
                                 news = news,
-                                onClick = { newsId ->
-                                    navController.navigate(Routes.buildBeritaDetailRoute(newsId))
-                                }
+                                onClick = { onNavigateToBeritaDetail(news.id) }
                             )
                         }
                     }

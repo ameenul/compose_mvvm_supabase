@@ -72,49 +72,38 @@ fun MainHomeScreen(navController: NavHostController) {
                 BerandaScreen(
                     onNavigateToAddTodo = { navController.navigate(Routes.AddTodo) },
                     onNavigateToDetail = { id -> navController.navigate(Routes.Detail.replace("{id}", id)) },
-                    onNavigateToJadwal = { bottomNavController.navigate(Routes.Jadwal) },
-                    onNavigateToTempat = { bottomNavController.navigate(Routes.Tempat) },
-                    onNavigateToReview = { bottomNavController.navigate(Routes.Review) },
+                    onNavigateToJadwal = { navController.navigate(Routes.Jadwal) },
+                    onNavigateToTempat = { navController.navigate(Routes.Tempat) },
+                    onNavigateToReview = { navController.navigate(Routes.Review) },
                     onNavigateToTeacherDetail = { teacherId ->
-                        navController.navigate(Routes.TeacherDetail + "/$teacherId")
+                        navController.navigate(Routes.buildTeacherDetailRoute(teacherId))
                     }
                 )
             }
             composable(Routes.Cari) {
                 CariScreen(
-                    onNavigateToCreateTeacher = { navController.navigate(Routes.CreateTeacher) }, // CORRECTED
+                    onNavigateToCreateTeacher = { navController.navigate(Routes.CreateTeacher) },
                     onNavigateToTeacherDetail = { teacherId ->
-                        navController.navigate(Routes.TeacherDetail + "/$teacherId")
+                        navController.navigate(Routes.buildTeacherDetailRoute(teacherId))
                     }
                 )
             }
-            composable(Routes.Berita) {  BeritaScreen( navController = bottomNavController) }
-            composable(Routes.BeritaDetail) { backStackEntry ->
-                DetailBeritaScreen(
-                    onBack = { bottomNavController.popBackStack() },
-                    onNavigateToEdit = { newsId -> bottomNavController.navigate(Routes.buildBeritaEditRoute(newsId))}
-                )
-            }
-            composable(Routes.BeritaEdit) { backStackEntry ->
-                EditBeritaScreen(
-                    onBack = { bottomNavController.popBackStack() }
-                )
-            }
-            composable(Routes.AddNews) {
-                AddNewsScreen(
-                    onBack = { bottomNavController.popBackStack() }
-                )
-            }
+            composable(Routes.Berita) {  BeritaScreen(
+                navController = navController, // Changed to main navController
+                onNavigateToAddNews = { navController.navigate(Routes.AddNews) },
+                onNavigateToBeritaDetail = { newsId -> navController.navigate(Routes.buildBeritaDetailRoute(newsId)) }
+            ) }
+            // Removed BeritaDetail, BeritaEdit, AddNews from here
             composable(Routes.Profil) { ProfilScreen() }
-            composable(Routes.Jadwal) { JadwalScreen(navController = bottomNavController) }
-            composable(Routes.Tempat) { TempatScreen(navController = bottomNavController) }
-            composable(Routes.Review) { ReviewScreen(navController = bottomNavController) }
+            composable(Routes.Jadwal) { JadwalScreen(navController = navController) }
+            composable(Routes.Tempat) { TempatScreen(navController = navController) }
+            composable(Routes.Review) { ReviewScreen(navController = navController) }
             composable(
                 route = Routes.EditTeacher,
                 arguments = listOf(navArgument("teacherId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val teacherId = backStackEntry.arguments?.getString("teacherId") ?: ""
-                EditTeacherScreen(teacherId = teacherId, navController = bottomNavController)
+                EditTeacherScreen(teacherId = teacherId, navController = navController)
             }
         }
     }
