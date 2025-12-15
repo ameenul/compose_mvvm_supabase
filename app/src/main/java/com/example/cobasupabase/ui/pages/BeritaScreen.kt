@@ -76,9 +76,6 @@ fun BeritaScreen(
                     text = "Berita Terbaru",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
-                TextButton(onClick = { /* Implementasi navigasi ke daftar berita lengkap (Lainnya) */ }) {
-                    Text("Lainnya")
-                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))

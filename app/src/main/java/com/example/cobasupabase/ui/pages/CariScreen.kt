@@ -33,7 +33,7 @@ fun CariScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToCreateTeacher) { // CORRECTED
-                Icon(Icons.Default.Add, contentDescription = "Create Teacher")
+                Icon(Icons.Default.Add, contentDescription = "Tambah Guru")
             }
         }
     ) { paddingValues ->
@@ -51,7 +51,7 @@ fun CariScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "All Teachers",
+                    text = "Semua Guru",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
             }
