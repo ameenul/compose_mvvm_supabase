@@ -26,23 +26,19 @@ class PlaceRepository {
     }
 
     /** CREATE */
+    /** CREATE */
     suspend fun createPlace(
+        userId: String,
         name: String,
         address: String,
         rating: Double,
-        imageBytes: ByteArray?
+        imageUrl: String? = null
     ) {
-        var imageUrl: String? = null
-
-        if (imageBytes != null) {
-            val fileName = "${System.currentTimeMillis()}.jpg"
-            val bucket = client.storage["review-images"]
-            bucket.upload(fileName, imageBytes)
-            imageUrl = bucket.publicUrl(fileName)
-        }
-
+        // Jika sebelumnya ada logika upload imageBytes, hapus / sesuaikan
+        // Sekarang kita pakai imageUrl langsung dari input
         client.postgrest["places"].insert(
             mapOf(
+                "user_id" to userId,
                 "name" to name,
                 "address" to address,
                 "rating" to rating,
@@ -73,6 +69,14 @@ class PlaceRepository {
     suspend fun deletePlace(id: Int) {
         client.postgrest["places"].delete {
             filter { eq("id", id) }
+        }
+    }
+    suspend fun getPlaceById(id: Int): Place? {
+        return try {
+            val allPlaces = getPlaces() // ambil semua tempat dari Supabase
+            allPlaces.find { it.id == id }
+        } catch (e: Exception) {
+            null
         }
     }
 }

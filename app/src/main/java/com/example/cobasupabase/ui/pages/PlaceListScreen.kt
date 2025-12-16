@@ -17,7 +17,8 @@ import com.example.cobasupabase.ui.viewmodel.PlaceViewModel
 @Composable
 fun PlaceListScreen(
     viewModel: PlaceViewModel = viewModel(),
-    onNavigateToDetail: (Int) -> Unit
+    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToCreatePlace: () -> Unit // callback baru untuk tombol tambah
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -25,43 +26,52 @@ fun PlaceListScreen(
         viewModel.loadPlaces()
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        when (state) {
-            is UiResult.Idle -> {}
+    Column(modifier = Modifier.fillMaxSize()) {
 
-            is UiResult.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+        // Button tambah tempat
+        Button(
+            onClick = { onNavigateToCreatePlace() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Tambah Tempat")
+        }
 
-            is UiResult.Success -> {
-                val places = (state as UiResult.Success).data
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (state) {
+                is UiResult.Idle -> {}
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(places) { place ->
-                        PlaceCard(
-                            place = place,
-                            onClick = { onNavigateToDetail(place.id) },
-                            onDelete = { viewModel.deletePlace(place.id) }
-                        )
+                is UiResult.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                is UiResult.Success -> {
+                    val places = (state as UiResult.Success).data
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(places) { place ->
+                            PlaceCard(
+                                place = place,
+                                onClick = { onNavigateToDetail(place.id) },
+                                onDelete = { viewModel.deletePlace(place.id) }
+                            )
+                        }
                     }
                 }
-            }
 
-            is UiResult.Error -> {
-                Text(
-                    text = (state as UiResult.Error).message,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
-                )
+                is UiResult.Error -> {
+                    Text(
+                        text = (state as UiResult.Error).message,
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

@@ -14,6 +14,14 @@ import com.example.cobasupabase.ui.viewmodel.AuthViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.cobasupabase.ui.pages.PlaceListScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.navArgument
+import com.example.cobasupabase.ui.pages.PlaceDetailScreen
+import com.example.cobasupabase.ui.pages.PlaceListScreen
+import com.example.cobasupabase.ui.viewmodel.PlaceViewModel
+import com.example.cobasupabase.ui.nav.Screen
+import com.example.cobasupabase.ui.pages.CreatePlaceScreen
+import java.util.UUID
 
 
 object Graph {
@@ -39,6 +47,7 @@ object Routes {
     const val ReviewList = "review_list/{teacherId}" // Specific teacher's reviews
     const val AllReviewsList = "all_reviews_list" // All reviews
     const val ReviewAdd = "review_add/{teacherId}"
+    const val CreatePlace = "create_place"
 
     fun buildReviewListRoute(id: Int) = "review_list/$id"
     fun buildReviewAddRoute(id: Int) = "review_add/$id"
@@ -145,8 +154,32 @@ fun AppNavigation(
         }
 
         composable(Routes.Tempat) {
-            PlaceListScreen()
+            PlaceListScreen(
+                viewModel = viewModel(),
+                onNavigateToDetail = { placeId ->
+                    navController.navigate("place_detail/$placeId")
+                },
+                onNavigateToCreatePlace = {
+                    navController.navigate(Routes.CreatePlace)
+                }
+            )
         }
+
+
+
+        composable(
+            route = "place_detail/{placeId}",
+            arguments = listOf(navArgument("placeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
+            val placeViewModel: PlaceViewModel = viewModel()
+            PlaceDetailScreen(
+                placeId = placeId,
+                viewModel = placeViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
 
         // Composable for a specific teacher's reviews
         composable(
@@ -167,6 +200,21 @@ fun AppNavigation(
                 teacherId = null // Pass null to indicate all reviews
             )
         }
+
+        composable(Routes.CreatePlace) {
+            val placeViewModel: PlaceViewModel = viewModel()
+            val randomUserId = UUID.randomUUID().toString() // sementara pakai random UUID
+
+            CreatePlaceScreen(
+                viewModel = placeViewModel,
+                currentUserId = randomUserId, // gunakan random sementara
+                onPlaceCreated = {
+                    navController.popBackStack()
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
 
         composable(
             route = Routes.ReviewAdd,
