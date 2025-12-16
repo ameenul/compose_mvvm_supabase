@@ -16,6 +16,8 @@ navCompose = "2.9.6"
 coilCompose = "2.7.0"
 supabase = "2.6.1"
 ktorClientCio = "2.3.12"
+benchmarkCommon = "1.4.1"
+foundation = "1.10.0"
 
 
 [libraries]
@@ -44,6 +46,8 @@ supabase-gotrue = { module = "io.github.jan-tennert.supabase:gotrue-kt" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navCompose" }
+androidx-benchmark-common = { group = "androidx.benchmark", name = "benchmark-common", version.ref = "benchmarkCommon" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

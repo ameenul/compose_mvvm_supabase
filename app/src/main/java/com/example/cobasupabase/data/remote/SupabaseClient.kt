@@ -10,8 +10,8 @@ import io.github.jan.supabase.storage.Storage
 
 object SupabaseHolder {
     // Ganti dengan URL & anon/public key Supabase Anda
-    private const val SUPABASE_URL = "https://yxwvgddrriwwdksymvre.supabase.co"
-    private const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4d3ZnZGRycml3d2Rrc3ltdnJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE1MDU3ODQsImV4cCI6MjA3NzA4MTc4NH0.5kDQvpumBJ8BJySpwqtIl90J_1aWaBNlTz4QAsWRG74"
+    private const val SUPABASE_URL = "https://apmlejbbadrnptnqohbz.supabase.co"
+    private const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFwbWxlamJiYWRybnB0bnFvaGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNDA1MDYsImV4cCI6MjA3OTkxNjUwNn0.rcQS3yAsSIMLOlhcwTTP5EY3CQWIYhSa3Nkq3JYfsBI"
 
 
     val client: SupabaseClient = createSupabaseClient(

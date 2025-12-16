@@ -17,8 +17,8 @@ class AuthViewModel(
     private val repo: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow<UiResult<Boolean>>(UiResult.Success(repo.currentSession() != null))
-    val authState: StateFlow<UiResult<Boolean>> = _authState
+    private val _authState = MutableStateFlow<UiResult<Unit>>(UiResult.Idle)
+    val authState: StateFlow<UiResult<Unit>> = _authState
 
     val isAuthenticated: StateFlow<Boolean> = repo.sessionStatus
         .map { status -> status is SessionStatus.Authenticated }
@@ -28,12 +28,26 @@ class AuthViewModel(
             initialValue = false
         )
 
+    val currentUserEmail: StateFlow<String?> = repo.sessionStatus
+        .map { status ->
+            if (status is SessionStatus.Authenticated) {
+                status.session.user?.email
+            } else {
+                null
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
+
     fun register(email: String, password: String) {
         _authState.value = UiResult.Loading
         viewModelScope.launch {
             try {
                 repo.register(email, password)
-                _authState.value = UiResult.Success(true)
+                _authState.value = UiResult.Success(Unit)
             } catch (e: Exception) {
                 _authState.value = UiResult.Error(e.message ?: "Register gagal")
             }
@@ -45,7 +59,7 @@ class AuthViewModel(
         viewModelScope.launch {
             try {
                 repo.login(email, password)
-                _authState.value = UiResult.Success(true)
+                _authState.value = UiResult.Success(Unit)
             } catch (e: Exception) {
                 _authState.value = UiResult.Error(e.message ?: "Login gagal")
             }
@@ -56,13 +70,11 @@ class AuthViewModel(
          viewModelScope.launch {
              try {
                  repo.logout()
-                 _authState.value = UiResult.Success(false)
+                 _authState.value = UiResult.Success(Unit)
              }
              catch (e: Exception) {
                  _authState.value = UiResult.Error(e.message ?: "Logout gagal")
-         }}
-
+             }
+        }
     }
-
-
 }
